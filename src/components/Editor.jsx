@@ -3,17 +3,16 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { languages } from '@codemirror/language-data';
 import { oneDark } from '@codemirror/theme-one-dark';
 
-export default function Editor() {
-  const initialDoc = "# Welcome to your Markdown Editor\n\nStart typing here...";
-
+export default function Editor({ value, onChange }) {
   return (
-    <div className="w-full shadow-2xl overflow-hidden rounded-lg border border-gray-700">
+    <div className="w-full h-full shadow-2xl overflow-hidden rounded-lg border border-gray-700">
       <CodeMirror
-        value={initialDoc}
-        height="500px"
+        value={value}
+        height="100%"
         theme={oneDark}
         extensions={[markdown({ base: markdownLanguage, codeLanguages: languages })]}
-        className="text-lg"
+        onChange={onChange}
+        className="text-lg h-full"
       />
     </div>
   );

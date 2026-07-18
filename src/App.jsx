@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import Editor from './components/Editor';
+import Preview from './components/Preview';
 
 function App() {
-  const [markdownText, setMarkdownText] = useState("# Welcome to your Markdown Editor\n\nStart typing here...");
+  const [doc, setDoc] = useState("# Welcome to the Editor!\n\nStart typing on the left to see the live preview on the right...\n\n* **Bold text** works\n* _Italic text_ works\n\n### Enjoy the live preview!");
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center py-10 px-4">
-      <h1 className="text-3xl font-bold mb-8">Real-Time Markdown Editor</h1>
+    <div className="h-screen bg-gray-950 text-white flex flex-col p-4">
+      <h1 className="text-2xl font-bold mb-4 text-center">Real-Time Markdown Editor</h1>
       
-      <div className="w-full max-w-4xl">
-        <Editor value={markdownText} onChange={setMarkdownText} />
+      {/* 2-Column Grid Layout */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 min-h-0">
+        <Editor value={doc} onChange={setDoc} />
+        <Preview doc={doc} />
       </div>
     </div>
   )
