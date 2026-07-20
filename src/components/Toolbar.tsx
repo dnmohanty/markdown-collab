@@ -1,6 +1,10 @@
 import React from 'react';
 
-export default function Toolbar({ onInsert }) {
+interface ToolbarProps {
+  onInsert: (syntax: string, type: string) => void;
+}
+
+export default function Toolbar({ onInsert }: ToolbarProps) {
   const tools = [
     { label: 'B', syntax: '**', type: 'wrap', tooltip: 'Bold' },
     { label: 'I', syntax: '_', type: 'wrap', tooltip: 'Italic' },

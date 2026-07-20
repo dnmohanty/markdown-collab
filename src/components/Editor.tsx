@@ -6,10 +6,16 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { yCollab } from 'y-codemirror.next';
+import Toolbar from './Toolbar';
 
-export default function Editor({ onChange }) {
-  const [extensions, setExtensions] = useState([]);
-  const [sharedText, setSharedText] = useState(null);
+interface EditorProps {
+  onChange: (value: string) => void;
+  value?: string;
+}
+
+export default function Editor({ onChange, value }: EditorProps) {
+  const [extensions, setExtensions] = useState<any[]>([]);
+  const [sharedText, setSharedText] = useState<Y.Text | null>(null);
 
   useEffect(() => {
     const ydoc = new Y.Doc();
@@ -38,16 +44,17 @@ export default function Editor({ onChange }) {
     };
   }, [onChange]);
 
-  const handleInsert = (syntax, type) => {
+  const handleInsert = (syntax: string, type: string) => {
     if (!sharedText) return;
 
     const currentLength = sharedText.toString().length;
+    const currentText = value || "";
     let textToInsert = "";
 
     if (type === 'wrap') {
       textToInsert = `${syntax}text${syntax}`;
     } else if (type === 'start') {
-      const prefix = currentLength === 0 ? "" : "\n";
+      const prefix = currentText.length === 0 ? "" : "\n";
       textToInsert = `${prefix}${syntax}`;
     }
 
@@ -55,16 +62,10 @@ export default function Editor({ onChange }) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col shadow-2xl overflow-hidden rounded-lg border border-gray-700 bg-gray-900">
-      <div className="flex bg-gray-800 p-2 gap-2 border-b border-gray-700">
-        <button onClick={() => handleInsert('**', 'wrap')} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm font-bold text-white">B</button>
-        <button onClick={() => handleInsert('*', 'wrap')} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm italic text-white">I</button>
-        <button onClick={() => handleInsert('# ', 'start')} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm font-bold text-white">H1</button>
-        <button onClick={() => handleInsert('## ', 'start')} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm font-bold text-white">H2</button>
-        <button onClick={() => handleInsert('- ', 'start')} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm text-white">List</button>
-        <button onClick={() => handleInsert('`', 'wrap')} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm font-mono text-white">Code</button>
-      </div>
-      <div className="flex-1 overflow-auto">
+    <div className="w-full h-full flex flex-col shadow-2xl overflow-hidden rounded-lg border border-gray-700">
+      <Toolbar onInsert={handleInsert} />
+      
+      <div className="flex-1 overflow-hidden">
         <CodeMirror
           height="100%"
           theme={oneDark}
