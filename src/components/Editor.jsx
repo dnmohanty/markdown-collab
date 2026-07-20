@@ -6,13 +6,16 @@ import { oneDark } from '@codemirror/theme-one-dark';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { yCollab } from 'y-codemirror.next';
+import Toolbar from './Toolbar';
 
 export default function Editor({ onChange }) {
   const [extensions, setExtensions] = useState([]);
+  const [sharedText, setSharedText] = useState(null);
 
   useEffect(() => {
     const ydoc = new Y.Doc();
     const ytext = ydoc.getText('codemirror');
+    setSharedText(ytext);
 
     const provider = new WebsocketProvider(
       'wss://demos.yjs.dev/ws',
@@ -36,14 +39,33 @@ export default function Editor({ onChange }) {
     };
   }, [onChange]);
 
+  const handleInsert = (syntax, type) => {
+    if (!sharedText) return;
+    
+    const currentLength = sharedText.toString().length;
+    let textToInsert = "";
+
+    if (type === 'wrap') {
+      textToInsert = `\n${syntax}text${syntax}`;
+    } else if (type === 'start') {
+      textToInsert = `\n${syntax}`;
+    }
+
+    sharedText.insert(currentLength, textToInsert);
+  };
+
   return (
-    <div className="w-full h-full shadow-2xl overflow-hidden rounded-lg border border-gray-700">
-      <CodeMirror
-        height="100%"
-        theme={oneDark}
-        extensions={extensions}
-        className="text-lg h-full"
-      />
+    <div className="w-full h-full flex flex-col shadow-2xl overflow-hidden rounded-lg border border-gray-700">
+      <Toolbar onInsert={handleInsert} />
+      
+      <div className="flex-1 overflow-hidden">
+        <CodeMirror
+          height="100%"
+          theme={oneDark}
+          extensions={extensions}
+          className="text-lg h-full"
+        />
+      </div>
     </div>
   );
 }
